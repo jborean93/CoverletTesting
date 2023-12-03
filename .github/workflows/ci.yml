@@ -1,0 +1,66 @@
+name: Test Coverlet
+on:
+  push:
+    branches:
+    - main
+
+  pull_request:
+    branches:
+    - main
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  POWERSHELL_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  BUILD_CONFIGURATION: ${{ fromJSON('["Debug", "Release"]')[github.ref == 'refs/heads/main'] }}
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Build Assembly
+      shell: sh
+      run: |
+        dotnet publish \
+          --configuration "${BUILD_CONFIGURATION}" \
+          --framework net6.0 \
+          src/MyAssembly/MyAssembly.csproj
+
+    - name: Capture Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: MyAssembly
+        path: src/MyAssembly/bin/${{ env.BUILD_CONFIGURATION }}/net6.0/publish/*
+
+  test:
+    name: test
+    needs:
+    - build
+    runs-on: ${{ matrix.info.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        info:
+        - os: windows-latest
+        - os: ubunut-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Restore Built Assembly
+      uses: actions/download-artifact@v3
+      with:
+        name: MyAssembly
+        path: output
+
+    - name: Run Tests
+      shell: pwsh
+      run: |
+        gci output
+        ./test.ps1
