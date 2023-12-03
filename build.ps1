@@ -9,5 +9,5 @@ foreach ($framework in 'net472', 'net6.0') {
     dotnet publish `
         --configuration $configuration `
         --framework $framework `
-        src/MyAssembly/MyAssembly.csproj
+        $PSScriptRoot/src/MyAssembly/MyAssembly.csproj
 }
