@@ -29,13 +29,24 @@ jobs:
       run: |
         dotnet publish \
           --configuration "${BUILD_CONFIGURATION}" \
+          --framework net472 \
+          src/MyAssembly/MyAssembly.csproj
+
+        dotnet publish \
+          --configuration "${BUILD_CONFIGURATION}" \
           --framework net6.0 \
           src/MyAssembly/MyAssembly.csproj
 
     - name: Capture Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: MyAssembly
+        name: MyAssemblyFX
+        path: src/MyAssembly/bin/${{ env.BUILD_CONFIGURATION }}/net472/publish/*
+
+    - name: Capture Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: MyAssemblyNet
         path: src/MyAssembly/bin/${{ env.BUILD_CONFIGURATION }}/net6.0/publish/*
 
   test:
@@ -48,7 +59,11 @@ jobs:
       matrix:
         info:
         - os: windows-latest
+          use_win_ps: false
+        - os: windows-latest
+          use_win_ps: true
         - os: ubunut-latest
+          use_win_ps: false
 
     steps:
     - uses: actions/checkout@v3
@@ -56,11 +71,20 @@ jobs:
     - name: Restore Built Assembly
       uses: actions/download-artifact@v3
       with:
-        name: MyAssembly
+        name: MyAssembly${{ fromJSON('["Net", "FX"]')[matrix.info.use_win_ps] }}
         path: output
 
     - name: Run Tests
-      shell: pwsh
+      if: ${{ fromJson('["pwsh", "powershell"]])[matrix.info.use_win_ps == true] }}
+      shell: ${{ matrix.info.use_win_ps] }}
       run: |
-        gci output
-        ./test.ps1
+        Add-Type -Path ./output/MyAssembly.dll
+
+        $expected = 'Method1'
+        $actual = [MyAssembly.MyClass]::Method1()
+
+        Write-Host "Actual: '$actual'`nExpected: '$expected'"
+
+        if ($actual -ne $expected) {
+            throw "Assertion error"
+        }
