@@ -76,7 +76,7 @@ jobs:
 
     - name: Run Tests
       if: ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }}
-      shell: ${{ matrix.info.use_win_ps] }}
+      shell: ${{ matrix.info.use_win_ps }}
       run: |
         Add-Type -Path ./output/MyAssembly.dll
 
