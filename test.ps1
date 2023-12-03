@@ -1,6 +1,6 @@
 $PSVersionTable | Out-Host
 
-Add-Type -Path ./output/MyAssembly.dll
+Add-Type -Path ./bin/MyAssembly.dll
 
 $expected = 'Method1'
 $actual = [MyAssembly.MyClass]::Method1()

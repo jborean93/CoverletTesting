@@ -72,7 +72,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: MyAssembly${{ fromJSON('["Net", "FX"]')[matrix.info.use_win_ps] }}
-        path: output
+        path: bin
 
     - name: Install Coverlet
       shell: sh
@@ -83,5 +83,6 @@ jobs:
       shell: sh
       run: >-
         coverlet
+        bin
         --target ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }}
         --targetargs "-File test.ps1"
