@@ -19,17 +19,7 @@ if (-not $exe) {
     $exe = [Environment]::GetCommandLineArgs()[0] -replace '\.dll$', ''
 }
 
-$tempPath = Join-Path (Split-Path -Path $PSScriptRoot -Parent) "CoverletTesting-Temp"
-Move-Item -Path $PSScriptRoot -Destination $tempPath
-try {
-    Push-Location -Path $tempPath
-
-    coverlet `
-        "$tempPath/bin" `
-        --target $exe `
-        --targetargs "-EncodedCommand $encCommand"
-}
-finally {
-    Pop-Location
-    Move-Item -Path $tempPath -Destination $PSScriptRoot
-}
+coverlet `
+    "$PSScriptRoot/bin" `
+    --target $exe `
+    --targetargs "-EncodedCommand $encCommand"
