@@ -20,6 +20,6 @@ if (-not $exe) {
 }
 
 coverlet `
-    bin 1 `
+    bin `
     --target $exe `
     --targetargs "-EncodedCommand $encCommand"
