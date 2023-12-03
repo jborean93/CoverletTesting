@@ -62,7 +62,7 @@ jobs:
           use_win_ps: false
         - os: windows-latest
           use_win_ps: true
-        - os: ubunut-latest
+        - os: ubuntu-latest
           use_win_ps: false
 
     steps:
@@ -75,16 +75,6 @@ jobs:
         path: output
 
     - name: Run Tests
-      if: ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }}
-      shell: ${{ matrix.info.use_win_ps }}
+      shell: sh
       run: |
-        Add-Type -Path ./output/MyAssembly.dll
-
-        $expected = 'Method1'
-        $actual = [MyAssembly.MyClass]::Method1()
-
-        Write-Host "Actual: '$actual'`nExpected: '$expected'"
-
-        if ($actual -ne $expected) {
-            throw "Assertion error"
-        }
+        ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }} -File test.ps1
