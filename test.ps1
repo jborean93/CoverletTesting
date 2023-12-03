@@ -1,3 +1,5 @@
+$PSVersionTable | Out-Host
+
 Add-Type -Path ./output/MyAssembly.dll
 
 $expected = 'Method1'

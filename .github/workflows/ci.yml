@@ -74,7 +74,14 @@ jobs:
         name: MyAssembly${{ fromJSON('["Net", "FX"]')[matrix.info.use_win_ps] }}
         path: output
 
-    - name: Run Tests
+    - name: Install Coverlet
       shell: sh
       run: |
-        ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }} -File test.ps1
+        dotnet tool install --global coverlet.console
+
+    - name: Run Tests
+      shell: sh
+      run: >-
+        coverlet
+        --target ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }}
+        --targetargs "-File test.ps1"
