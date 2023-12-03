@@ -25,17 +25,8 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Build Assembly
-      shell: sh
-      run: |
-        dotnet publish \
-          --configuration "${BUILD_CONFIGURATION}" \
-          --framework net472 \
-          src/MyAssembly/MyAssembly.csproj
-
-        dotnet publish \
-          --configuration "${BUILD_CONFIGURATION}" \
-          --framework net6.0 \
-          src/MyAssembly/MyAssembly.csproj
+      shell: pwsh
+      run: ./build.ps1
 
     - name: Capture Artifacts
       uses: actions/upload-artifact@v3
@@ -80,9 +71,7 @@ jobs:
         dotnet tool install --global coverlet.console
 
     - name: Run Tests
-      shell: sh
-      run: >-
-        coverlet
-        bin
-        --target ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }}
-        --targetargs "-File test.ps1"
+      shell: pwsh
+      run: ./test.ps1
+      env:
+        TEST_EXE: ${{ fromJson('["pwsh", "powershell"]')[matrix.info.use_win_ps == true] }}
