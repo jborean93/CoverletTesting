@@ -22,4 +22,5 @@ if (-not $exe) {
 coverlet `
     "$PSScriptRoot/bin" `
     --target $exe `
-    --targetargs "-EncodedCommand $encCommand"
+    --targetargs "-EncodedCommand $encCommand" `
+    --use-source-link
